@@ -1,8 +1,10 @@
 import time
 import sys
-import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 
 # Define common XSS payloads
@@ -36,9 +38,17 @@ Description:
 """
 
 def initialize_browser():
-    options = webdriver.ChromeOptions()
+    # Setup Chrome options
+    options = Options()
     options.add_argument("--headless")  # Run in headless mode for faster execution
-    browser = webdriver.Chrome(options=options)
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+
+    # Setup the Chrome WebDriver using WebDriverManager to automatically get the right driver version
+    service = Service(ChromeDriverManager().install())
+    
+    # Initialize the Chrome driver
+    browser = webdriver.Chrome(service=service, options=options)
     return browser
 
 def scan_page_for_forms(browser, url):
